@@ -116,13 +116,18 @@ class IconCalendar extends Component {
     console.log("clicked");
   }
 
+  formModelChange = () => {
+    console.log(a)
+    console.log(b)
+  }
+
   render() {
     return (
       <div style={{height: '100vh', background: '#fff', color: '#000', position: 'relative', overflow: 'hidden'}}>
         {
           this.props.scheduleStore.allSchedules && (
             <div>
-              <ScheduleForm/>
+              <ScheduleForm onModelChange={this.formModelChange}/>
             </div>
           )
         }

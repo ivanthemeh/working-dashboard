@@ -1,29 +1,51 @@
 import React, { Component } from "react";
 import DateTimePicker from 'material-ui-pickers/DateTimePicker';
-import { IconButton, Icon, InputAdornment } from '@material-ui/core';
+import { IconButton, Icon, Grid, Paper } from 'material-ui';
+import { SchemaForm } from 'material-ui-schema-form';
+import { withStyles } from "material-ui";
+import PropTypes from 'proptypes';
+
 
 const form = [
-    "textWithDefault",
-    "textNoDefault",
-    "textWithRegex",
-    "staticDropdown",
-    {
+  "name",
+  "email",
+  "textWithDefault",
+  "textNoDefault",
+  "staticDropdown",
+  {
     "key": "textArea",
     "type": "textarea",
     "placeholder": "Make a comment"
-    },
-    {
+  },
+  {
     "key": "helpMessage",
     "type": "help"
-    },
-    {
+  },
+  {
     "key": "checkbox",
-    "type": "checkbox"
-    },
-    {
+    "type": "toggleswitch"
+  },
+  {
     "key": "date",
     "type": "date"
-    }
+  },
+  {
+    "key": "radios",
+    "type": "radios",
+    "titleMap": [{
+        "value": "c",
+        "name": "C"
+      },
+      {
+        "value": "b",
+        "name": "B"
+      },
+      {
+        "value": "a",
+        "name": "A"
+      }
+    ]
+  }
 ]
 
 const schema = {
@@ -39,10 +61,10 @@ const schema = {
       "title": "Text no default",
       "type": "string"
     },
-    "textWithRegex": {
-      "title": "Text With Regex and Description",
+    "email": {
+      "title": "Email - Text With Regex and Description",
       "type": "string",
-      "pattern": "^\\S+@\\S+$",
+      "pattern": "^\\\\S+@\\\\S+$",
       "description": "General regex for email."
     },
     "staticDropdown": {
@@ -76,32 +98,47 @@ const schema = {
     "date": {
       "title": "Date",
       "type": "date"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string",
+      "minLength": 3
+    },
+    "radios": {
+      "title": "Basic radio button example",
+      "type": "string",
+      "enum": [
+        "a",
+        "b",
+        "c"
+      ]
     }
   },
   "required": [
     "name",
-    "email",
-    "comment"
+    "email"
   ]
 }
 
 const model = {
-  "staticDropdown": "SIT2",
-  "checkbox": true,
-  "textWithDefault": "testies ",
-  "textNoDefault": "testies",
-  "textWithRegex": "me@me.com"
+  "checkbox": true
 }
 
-export default class ScheduleForm extends Component {
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing.unit * 2,
+    margin: theme.spacing.unit * 2,
+    textAlign: 'left',
+    color: theme.palette.text.secondary,
+  },
+});
+
+class ScheduleForm extends Component {
     constructor(props) {
         super(props);
-        // this.state = {
-        //   title: 'New Schedule In state',
-        //   startDate: new Date(),
-        //   endDate: new Date(),
-        //   selectedEvent: this.props.selectedEvent ? this.props.selectedEvent.toJSON() : null
-        // };
         this.state = {
           selectedDate: new Date(),
         }
@@ -111,60 +148,42 @@ export default class ScheduleForm extends Component {
         selectedDate: date
       });
     }
-    // handleDateChange = (name, date) => {
-    //     this.setState({
-    //     [name]: new Date(date),
-    //     });
-    //     console.log(this.state);
-    // };
-    // onChange = (name, value) => {
-    //     console.log(...name);    
-    //     console.log(value)
-    // }
     render() {
+      const { classes } = this.props;
         return (
-            <div>
-                <DateTimePicker
-                    value={this.state.selectedDate}
-                    onChange={this.handleDateChange} />
+            <div className={classes.root}>
+              <Grid container spacing={12}>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <DateTimePicker
+                        label="Start Date/Time"
+                        value={this.state.selectedDate}
+                        onChange={this.handleDateChange}
+                      />
+                  </Paper>
+                </Grid>
+                <Grid item xs={3}>
+                  <Paper className={classes.paper}>
+                    <DateTimePicker
+                      label="End Date/Time"
+                      value={this.state.selectedDate}
+                      onChange={this.handleDateChange}
+                    />
+                  </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                  <Paper className={classes.paper}>
+                    <SchemaForm schema={schema} form={form} model={model} onModelChange={this.props.onModelChange}></SchemaForm>
+                  </Paper>
+                </Grid>
+              </Grid>
             </div>
         );
     }
-}
+  }
 
+ScheduleForm.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
 
-{/* <MuiPickersUtilsProvider utils={DateFnsUtils}>
-                    <DateTimePicker
-                      id="startDate"
-                      label="Start Date and Time:"
-                      value={this.state.startDate}
-                      onChange={(date) => this.handleDateChange("startDate", date)}
-                      style={{marginTop: '16px'}}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="start">
-                            <IconButton>
-                              <Icon>calendar_today</Icon>
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                    <DateTimePicker
-                      id="endDate"
-                      label="End Date and Time:"
-                      value={this.state.endDate}
-                      onChange={(date) => this.handleDateChange("endDate", date)}
-                      style={{marginTop: '16px'}}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="start">
-                            <IconButton>
-                              <Icon>calendar_today</Icon>
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </MuiPickersUtilsProvider>
-                <SchemaForm schema={schema} form={form} model={model} onModelChange={(name,value) => this.onChange(name,value)}></SchemaForm> */}
+export default withStyles(styles)(ScheduleForm);
